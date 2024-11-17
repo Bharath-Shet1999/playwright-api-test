@@ -1,0 +1,136 @@
+{
+  "name": "playwright-api-script-generator",
+  "displayName": "Playwright API Test Generator",
+  "description": "A VS Code extension to capture API requests and generate Playwright test scripts.",
+  "version": "0.0.6",
+  "publisher": "Bharath",
+  "engines": {
+    "vscode": ">=1.80.0"
+  },
+  "icon": "api.png",
+  "keywords": [
+    "playwright",
+    "api",
+    "testing",
+    "Playwright API Test Generator",
+    "Test Generator",
+    "Playwright",
+    "automation",
+    "test",
+    "api-testing",
+    "playwright-test",
+    "test-automation",
+    "api-recorder",
+    "rest-api",
+    "http",
+    "test-generator",
+    "recorder",
+    "api-capture",
+    "e2e-testing"
+  ],
+  "categories": [
+    "Testing",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.startApiTest",
+    "onCommand:extension.stopApiTest",
+    "onCommand:extension.deleteApiLog",
+    "onCommand:extension.setSiteUrl",
+    "onCommand:extension.setApiBaseUrl",
+    "onView:apiCaptureView"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "apiCapture",
+          "title": "Record & Generate Scripts",
+          "icon": "api.png"
+        }
+      ]
+    },
+    "views": {
+      "apiCapture": [
+        {
+          "id": "apiCaptureView",
+          "name": "Captured APIs"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "extension.startApiTest",
+        "title": "Start API Test"
+      },
+      {
+        "command": "extension.stopApiTest",
+        "title": "Stop API Test"
+      },
+      {
+        "command": "extension.deleteApiLog",
+        "title": "Delete API Log"
+      },
+      {
+        "command": "extension.setSiteUrl",
+        "title": "Set Application URL"
+      },
+      {
+        "command": "extension.setApiBaseUrl",
+        "title": "Set API Base URL"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "extension.startApiTest",
+          "when": "view == apiCaptureView",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.stopApiTest",
+          "when": "view == apiCaptureView",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.setSiteUrl",
+          "when": "view == apiCaptureView",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.setApiBaseUrl",
+          "when": "view == apiCaptureView",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.9",
+    "@types/node": "20.x",
+    "@types/vscode": "1.80",
+    "@typescript-eslint/eslint-plugin": "^8.10.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.13.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.6.3",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@playwright/test": "1.47.2",
+    "playwright": "^1.48.2",
+    "playwright-core": "^1.48.2"
+  }
+}
