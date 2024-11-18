@@ -180,7 +180,7 @@ class ApiCaptureProvider implements vscode.TreeDataProvider<ApiLogItem> {
   }
 
   async stopApiCapture() {
-    if(this.apiLogs.length > 0){
+    if(this.apiLogs.length <= 0){
       return;
     }
     const testScripts = this.apiLogs.map((log, index) => this.generatePlaywrightScript(log, index));

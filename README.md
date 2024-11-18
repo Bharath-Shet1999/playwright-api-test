@@ -2,6 +2,9 @@
 
 A Visual Studio Code extension that automatically captures API requests and generates Playwright test scripts. This tool helps streamline the process of creating API tests by recording actual API calls made during application usage.
 
+### Key Sections:
+- **Troubleshooting**: The section that explains how to manually trigger the download of Chromium if the automatic download fails. This includes the `npx puppeteer browsers install chrome` command.
+
 ## Features
 
 - 🎥 **API Request Capture**: Automatically captures API requests made from your application
