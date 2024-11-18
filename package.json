@@ -2,10 +2,10 @@
   "name": "playwright-api-script-generator",
   "displayName": "Playwright API Test Generator",
   "description": "A VS Code extension to capture API requests and generate Playwright test scripts.",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "publisher": "Bharath",
   "engines": {
-    "vscode": ">=1.80.0"
+    "vscode": ">=1.90.0"
   },
   "icon": "api.png",
   "keywords": [
@@ -32,14 +32,7 @@
     "Testing",
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:extension.startApiTest",
-    "onCommand:extension.stopApiTest",
-    "onCommand:extension.deleteApiLog",
-    "onCommand:extension.setSiteUrl",
-    "onCommand:extension.setApiBaseUrl",
-    "onView:apiCaptureView"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -117,7 +110,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.9",
     "@types/node": "20.x",
-    "@types/vscode": "1.80",
+    "@types/vscode": "^1.90.0",
     "@typescript-eslint/eslint-plugin": "^8.10.0",
     "@typescript-eslint/parser": "^8.7.0",
     "@vscode/test-cli": "^0.0.10",
@@ -129,8 +122,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@playwright/test": "1.47.2",
-    "playwright": "^1.48.2",
-    "playwright-core": "^1.48.2"
+    "puppeteer": "^23.8.0",
+    "webpack-node-externals": "^3.0.0"
   }
 }

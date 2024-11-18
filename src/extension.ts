@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { chromium } from 'playwright';
+import puppeteer, { Browser, Page } from 'puppeteer';
 
 export function activate(extensionContext: vscode.ExtensionContext) {
   const apiCaptureProvider = new ApiCaptureProvider();
@@ -95,7 +95,7 @@ class ApiCaptureProvider implements vscode.TreeDataProvider<ApiLogItem> {
   private siteUrl: string | undefined;
   private apiBaseUrl: string | undefined;
   private capturing: boolean = false;
-  private browser: any;
+  private browser: Browser | null = null;
   private apiLogs: any[] = [];
 
   // Getter and Setter for Site URL and API Base URL
@@ -131,13 +131,18 @@ class ApiCaptureProvider implements vscode.TreeDataProvider<ApiLogItem> {
     this.siteUrl = siteUrl;
     this.apiBaseUrl = apiBaseUrl;
 
-    this.browser = await chromium.launch({ headless: false });
-    const context = await this.browser.newContext();
-    const page = await context.newPage();
+    this.browser = await puppeteer.launch({ 
+      headless: false,
+      args: ['--start-maximized'], // Maximizes the window on launch
+      defaultViewport: null
+    });
+    const page: Page = await this.browser.newPage();
 
     this.apiLogs = [];
 
-    context.on('request', (request: any) => {
+    // Set up request interception to capture network requests
+    await page.setRequestInterception(true);
+    page.on('request', (request) => {
       if (['xhr', 'fetch'].includes(request.resourceType()) && request.url().startsWith(apiBaseUrl)) {
         const log = {
           method: request.method(),
@@ -149,26 +154,24 @@ class ApiCaptureProvider implements vscode.TreeDataProvider<ApiLogItem> {
         this.apiLogs.push(log);
         this.addLog(log);
       }
+      request.continue();
     });
 
     page.on('close', async () => {
       await this.stopApiCapture();
     });
 
-    context.on('requestfinished', async (request: any) => {
-      const matchingLog = this.apiLogs.find((log) => log.url === request.url());
+    page.on('response', async (response) => {
+      const matchingLog = this.apiLogs.find((log) => log.url === response.url());
       if (matchingLog) {
         try {
-          const response = await request.response();
-          if (response) {
-            matchingLog.response = {
-              status: response.status(),
-              headers: response.headers(),
-              body: await response.text(),
-            };
-          }
+          matchingLog.response = {
+            status: response.status(),
+            headers: response.headers(),
+            body: await response.text(),
+          };
         } catch (err) {
-          console.error(`Error capturing response for ${request.url()}:`, err);
+          console.error(`Error capturing response for ${response.url()}:`, err);
         }
       }
     });
@@ -177,7 +180,10 @@ class ApiCaptureProvider implements vscode.TreeDataProvider<ApiLogItem> {
   }
 
   async stopApiCapture() {
-    const testScripts = this.apiLogs.map((log, index) => this.generatePlaywrightTest(log, index));
+    if(this.apiLogs.length > 0){
+      return;
+    }
+    const testScripts = this.apiLogs.map((log, index) => this.generatePlaywrightScript(log, index));
     const testScriptContent = testScripts.join('\n\n');
 
     const saveUri = await vscode.window.showSaveDialog({
@@ -200,7 +206,7 @@ class ApiCaptureProvider implements vscode.TreeDataProvider<ApiLogItem> {
     this._onDidChangeTreeData.fire();
   }
 
-  private generatePlaywrightTest(log: any, index: number): string {
+  private generatePlaywrightScript(log: any, index: number): string {
     const responseValidation = log.response
       ? `expect(response.status()).toBe(${log.response.status});
          expect(await response.json()).toEqual(expect.objectContaining(${log.response.body}));`
